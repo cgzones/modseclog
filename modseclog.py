@@ -457,13 +457,14 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
         for key, value in rule_severities_sorted[:top]:
             print(f"\t({value})\t{key}")
 
-    print()
-    status_codes_sorted = sorted(status_codes.items(), key=lambda kv: -kv[1])
-    print(f"Found {len(status_codes_sorted)} distinct status codes")
-    if top > 0 and top < len(status_codes_sorted):
-        print(f"Top {top}:")
-    for key, value in status_codes_sorted[:top]:
-        print(f"\t({value})\t{key}\t\t{status_message_map[key]}")
+    if not args.status or len(args.status) != 1:
+        print()
+        status_codes_sorted = sorted(status_codes.items(), key=lambda kv: -kv[1])
+        print(f"Found {len(status_codes_sorted)} distinct status codes")
+        if top > 0 and top < len(status_codes_sorted):
+            print(f"Top {top}:")
+        for key, value in status_codes_sorted[:top]:
+            print(f"\t({value})\t{key}\t\t{status_message_map[key]}")
 
     if args.expand:
         for ev in matched_events:
@@ -615,6 +616,48 @@ def main() -> int:
     if args.file is None:
         parser.print_help()
         return -1
+
+    if args.destination_ip and args.exclude_destination_ip:
+        common_destination_ip = [item for item in args.destination_ip if item in args.exclude_destination_ip]
+        if common_destination_ip:
+            print(f"destination IP {common_destination_ip} use conflict!")
+            return -1
+
+    if args.path and args.exclude_path:
+        common_path = [item for item in args.path if item in args.exclude_path]
+        if common_path:
+            print(f"path {common_path} use conflict!")
+            return -1
+
+    if args.host and args.exclude_host:
+        common_host = [item for item in args.host if item in args.exclude_host]
+        if common_host:
+            print(f"host {common_host} use conflict!")
+            return -1
+
+    if args.rule and args.exclude_rule:
+        common_rule = [item for item in args.rule if item in args.exclude_rule]
+        if common_rule:
+            print(f"rule {common_rule} use conflict!")
+            return -1
+
+    if args.source_ip and args.exclude_source_ip:
+        common_source_ip = [item for item in args.source_ip if item in args.exclude_source_ip]
+        if common_source_ip:
+            print(f"source IP {common_source_ip} use conflict!")
+            return -1
+
+    if args.status and args.exclude_status:
+        common_status = [item for item in args.status if item in args.exclude_status]
+        if common_status:
+            print(f"status {common_status} use conflict!")
+            return -1
+
+    if args.severity and args.exclude_severity:
+        common_severity = [item for item in args.severity if item in args.exclude_severity]
+        if common_severity:
+            print(f"severity {common_severity} use conflict!")
+            return -1
 
     events = analyze_file(args.file)
 
