@@ -241,6 +241,8 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
     top: int = -1 if args.number < 0 else args.number
 
     print(f"Found {len(events)} total events")
+    if args.with_rule:
+        print('Excluding events without an associated rule')
     if args.source_ip:
         print(f"Limiting output to source IPs {args.source_ip}")
     if args.exclude_source_ip:
