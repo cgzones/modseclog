@@ -447,8 +447,8 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
         print(f"Found {len(rule_ids_sorted)} distinct rules")
         if top > 0 and top < len(rule_ids_sorted):
             print(f"Top {top}:")
-        for key, value in rule_ids_sorted[:top]:
-            print(f"\t({value})\t{key}\t\t{rule_description_map[key]}")
+        for key_int, value in rule_ids_sorted[:top]:
+            print(f"\t({value})\t{key_int}\t\t{rule_description_map[key_int]}")
 
     if not args.severity or len(args.severity) != 1:
         print()
@@ -465,8 +465,8 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
         print(f"Found {len(status_codes_sorted)} distinct status codes")
         if top > 0 and top < len(status_codes_sorted):
             print(f"Top {top}:")
-        for key, value in status_codes_sorted[:top]:
-            print(f"\t({value})\t{key}\t\t{status_message_map[key]}")
+        for key_int, value in status_codes_sorted[:top]:
+            print(f"\t({value})\t{key_int}\t\t{status_message_map[key_int]}")
 
     if args.expand:
         for ev in matched_events:
