@@ -515,7 +515,7 @@ def main() -> int:
         '-n',
         '--number',
         type=int,
-        default=10,
+        default=3,
         action='store',
         help='the number of top elements to display (use -1 to show all; defaults to 10)',
     )
