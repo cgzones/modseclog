@@ -409,63 +409,84 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
         print()
         source_ips_sorted = sorted(source_ips.items(), key=lambda kv: -kv[1])
         print(f"Found {len(source_ips_sorted)} distinct source IPs")
-        if top > 0 and top < len(source_ips_sorted):
+        if not args.list_source_ips and top > 0 and top < len(source_ips_sorted):
             print(f"Top {top}:")
-        for key, value in source_ips_sorted[:top]:
+            n = top
+        else:
+            n = -1
+        for key, value in source_ips_sorted[:n]:
             print(f"\t({value})\t{key}")
 
     if not args.destination_ip or len(args.destination_ip) != 1:
         print()
         destination_ips_sorted = sorted(destination_ips.items(), key=lambda kv: -kv[1])
         print(f"Found {len(destination_ips_sorted)} distinct destination IPs")
-        if top > 0 and top < len(destination_ips_sorted):
+        if not args.list_destination_ips and top > 0 and top < len(destination_ips_sorted):
             print(f"Top {top}:")
-        for key, value in destination_ips_sorted[:top]:
+            n = top
+        else:
+            n = -1
+        for key, value in destination_ips_sorted[:n]:
             print(f"\t({value})\t{key}")
 
     if not args.host or len(args.host) != 1:
         print()
         requested_hosts_sorted = sorted(requested_hosts.items(), key=lambda kv: -kv[1])
         print(f"Found {len(requested_hosts_sorted)} distinct requested hosts")
-        if top > 0 and top < len(requested_hosts_sorted):
+        if not args.list_hosts and top > 0 and top < len(requested_hosts_sorted):
             print(f"Top {top}:")
-        for key, value in requested_hosts_sorted[:top]:
+            n = top
+        else:
+            n = -1
+        for key, value in requested_hosts_sorted[:n]:
             print(f"\t({value})\t{key}")
 
     if not args.path or len(args.path) != 1:
         print()
         requested_paths_sorted = sorted(requested_paths.items(), key=lambda kv: -kv[1])
         print(f"Found {len(requested_paths_sorted)} distinct requested paths")
-        if top > 0 and top < len(requested_paths_sorted):
+        if not args.list_paths and top > 0 and top < len(requested_paths_sorted):
             print(f"Top {top}:")
-        for key, value in requested_paths_sorted[:top]:
+            n = top
+        else:
+            n = -1
+        for key, value in requested_paths_sorted[:n]:
             print(f"\t({value})\t{key}")
 
     if not args.rule or len(args.rule) != 1:
         print()
         rule_ids_sorted = sorted(rule_ids.items(), key=lambda kv: -kv[1])
         print(f"Found {len(rule_ids_sorted)} distinct rules")
-        if top > 0 and top < len(rule_ids_sorted):
+        if not args.list_rules and top > 0 and top < len(rule_ids_sorted):
             print(f"Top {top}:")
-        for key_int, value in rule_ids_sorted[:top]:
+            n = top
+        else:
+            n = -1
+        for key_int, value in rule_ids_sorted[:n]:
             print(f"\t({value})\t{key_int}\t\t{rule_description_map[key_int]}")
 
     if not args.severity or len(args.severity) != 1:
         print()
         rule_severities_sorted = sorted(rule_severities.items(), key=lambda kv: -kv[1])
         print(f"Found {len(rule_severities_sorted)} distinct rule severities")
-        if top > 0 and top < len(rule_severities_sorted):
+        if not args.list_severities and top > 0 and top < len(rule_severities_sorted):
             print(f"Top {top}:")
-        for key, value in rule_severities_sorted[:top]:
+            n = top
+        else:
+            n = -1
+        for key, value in rule_severities_sorted[:n]:
             print(f"\t({value})\t{key}")
 
     if not args.status or len(args.status) != 1:
         print()
         status_codes_sorted = sorted(status_codes.items(), key=lambda kv: -kv[1])
         print(f"Found {len(status_codes_sorted)} distinct status codes")
-        if top > 0 and top < len(status_codes_sorted):
+        if not args.list_statuses and top > 0 and top < len(status_codes_sorted):
             print(f"Top {top}:")
-        for key_int, value in status_codes_sorted[:top]:
+            n = top
+        else:
+            n = -1
+        for key_int, value in status_codes_sorted[:n]:
             print(f"\t({value})\t{key_int}\t\t{status_message_map[key_int]}")
 
     if args.expand:
@@ -512,6 +533,41 @@ def main() -> int:
         type=str,
         action='append',
         help='do not show events with the given destination IP; can be specified multiple times',
+    )
+    parser.add_argument(
+        '--list-destination-ips',
+        action='store_true',
+        help='show all destination IPs',
+    )
+    parser.add_argument(
+        '--list-hosts',
+        action='store_true',
+        help='show all requested hosts',
+    )
+    parser.add_argument(
+        '--list-paths',
+        action='store_true',
+        help='show all requested paths',
+    )
+    parser.add_argument(
+        '--list-rules',
+        action='store_true',
+        help='show all affected rules',
+    )
+    parser.add_argument(
+        '--list-severities',
+        action='store_true',
+        help='show all rule severities',
+    )
+    parser.add_argument(
+        '--list-source-ips',
+        action='store_true',
+        help='show all source IPs',
+    )
+    parser.add_argument(
+        '--list-statuses',
+        action='store_true',
+        help='show all HTTP response statuses',
     )
     parser.add_argument(
         '-n',
