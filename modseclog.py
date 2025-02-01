@@ -501,14 +501,14 @@ def main() -> int:
     )
     parser.add_argument(
         '-d',
-        '--destination_ip',
+        '--destination-ip',
         type=str,
         action='append',
         help='show only events with the given destination IP; can be specified multiple times',
     )
     parser.add_argument(
         '-D',
-        '--exclude_destination_ip',
+        '--exclude-destination-ip',
         type=str,
         action='append',
         help='do not show events with the given destination IP; can be specified multiple times',
@@ -530,7 +530,7 @@ def main() -> int:
     )
     parser.add_argument(
         '-P',
-        '--exclude_path',
+        '--exclude-path',
         type=str,
         action='append',
         help='do not show events with the given requetsted path; can be specified multiple times',
@@ -544,7 +544,7 @@ def main() -> int:
     )
     parser.add_argument(
         '-Q',
-        '--exclude_host',
+        '--exclude-host',
         type=str,
         action='append',
         help='do not show events with the given requetsted host; can be specified multiple times',
@@ -558,21 +558,21 @@ def main() -> int:
     )
     parser.add_argument(
         '-R',
-        '--exclude_rule',
+        '--exclude-rule',
         type=int,
         action='append',
         help='do not show events with the given rule ID; can be specified multiple times',
     )
     parser.add_argument(
         '-s',
-        '--source_ip',
+        '--source-ip',
         type=str,
         action='append',
         help='show only events with the given source IP; can be specified multiple times',
     )
     parser.add_argument(
         '-S',
-        '--exclude_source_ip',
+        '--exclude-source-ip',
         type=str,
         action='append',
         help='do not show events with the given source IP; can be specified multiple times',
@@ -586,14 +586,14 @@ def main() -> int:
     )
     parser.add_argument(
         '-T',
-        '--exclude_status',
+        '--exclude-status',
         type=int,
         action='append',
         help='do not show events with the given HTTP response status; can be specified multiple times',
     )
     parser.add_argument('-v', '--verbose', action='store_true', help='more verbose program output')
     parser.add_argument(
-        '-w', '--with_rule', action='store_true', help='show only events with a matched ModSecurity rule'
+        '-w', '--with-rule', action='store_true', help='show only events with a matched ModSecurity rule'
     )
     parser.add_argument('-x', '--expand', action='store_true', help='show the event details')
     parser.add_argument(
@@ -605,7 +605,7 @@ def main() -> int:
     )
     parser.add_argument(
         '-Y',
-        '--exclude_severity',
+        '--exclude-severity',
         type=str,
         action='append',
         help='do not show events with the given severity; can be specified multiple times',
