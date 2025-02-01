@@ -408,84 +408,77 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
     if not args.source_ip or len(args.source_ip) != 1:
         print()
         source_ips_sorted = sorted(source_ips.items(), key=lambda kv: -kv[1])
-        print(f"Found {len(source_ips_sorted)} distinct source IPs")
-        if not args.list_source_ips and top > 0 and top < len(source_ips_sorted):
+        n = len(source_ips_sorted)
+        print(f"Found {n} distinct source IPs")
+        if not args.list_source_ips and top > 0 and top < n:
             print(f"Top {top}:")
             n = top
-        else:
-            n = -1
         for key, value in source_ips_sorted[:n]:
             print(f"\t({value})\t{key}")
 
     if not args.destination_ip or len(args.destination_ip) != 1:
         print()
         destination_ips_sorted = sorted(destination_ips.items(), key=lambda kv: -kv[1])
-        print(f"Found {len(destination_ips_sorted)} distinct destination IPs")
-        if not args.list_destination_ips and top > 0 and top < len(destination_ips_sorted):
+        n = len(destination_ips_sorted)
+        print(f"Found {n} distinct destination IPs")
+        if not args.list_destination_ips and top > 0 and top < n:
             print(f"Top {top}:")
             n = top
-        else:
-            n = -1
         for key, value in destination_ips_sorted[:n]:
             print(f"\t({value})\t{key}")
 
     if not args.host or len(args.host) != 1:
         print()
         requested_hosts_sorted = sorted(requested_hosts.items(), key=lambda kv: -kv[1])
-        print(f"Found {len(requested_hosts_sorted)} distinct requested hosts")
-        if not args.list_hosts and top > 0 and top < len(requested_hosts_sorted):
+        n = len(requested_hosts_sorted)
+        print(f"Found {n} distinct requested hosts")
+        if not args.list_hosts and top > 0 and top < n:
             print(f"Top {top}:")
             n = top
-        else:
-            n = -1
         for key, value in requested_hosts_sorted[:n]:
             print(f"\t({value})\t{key}")
 
     if not args.path or len(args.path) != 1:
         print()
         requested_paths_sorted = sorted(requested_paths.items(), key=lambda kv: -kv[1])
-        print(f"Found {len(requested_paths_sorted)} distinct requested paths")
-        if not args.list_paths and top > 0 and top < len(requested_paths_sorted):
+        n = len(requested_paths_sorted)
+        print(f"Found {n} distinct requested paths")
+        if not args.list_paths and top > 0 and top < n:
             print(f"Top {top}:")
             n = top
-        else:
-            n = -1
         for key, value in requested_paths_sorted[:n]:
             print(f"\t({value})\t{key}")
 
     if not args.rule or len(args.rule) != 1:
         print()
         rule_ids_sorted = sorted(rule_ids.items(), key=lambda kv: -kv[1])
-        print(f"Found {len(rule_ids_sorted)} distinct rules")
-        if not args.list_rules and top > 0 and top < len(rule_ids_sorted):
+        n = len(rule_ids_sorted)
+        print(f"Found {n} distinct rules")
+        if not args.list_rules and top > 0 and top < n:
             print(f"Top {top}:")
             n = top
-        else:
-            n = -1
         for key_int, value in rule_ids_sorted[:n]:
             print(f"\t({value})\t{key_int}\t\t{rule_description_map[key_int]}")
 
     if not args.severity or len(args.severity) != 1:
         print()
         rule_severities_sorted = sorted(rule_severities.items(), key=lambda kv: -kv[1])
-        print(f"Found {len(rule_severities_sorted)} distinct rule severities")
-        if not args.list_severities and top > 0 and top < len(rule_severities_sorted):
+        n = len(rule_severities_sorted)
+        print(f"Found {n} distinct rule severities")
+        if not args.list_severities and top > 0 and top < n:
             print(f"Top {top}:")
             n = top
-        else:
-            n = -1
         for key, value in rule_severities_sorted[:n]:
             print(f"\t({value})\t{key}")
 
     if not args.status or len(args.status) != 1:
         print()
         status_codes_sorted = sorted(status_codes.items(), key=lambda kv: -kv[1])
-        print(f"Found {len(status_codes_sorted)} distinct status codes")
-        if not args.list_statuses and top > 0 and top < len(status_codes_sorted):
+        n = len(status_codes_sorted)
+        print(f"Found {n} distinct status codes")
+        if not args.list_statuses and top > 0 and top < n:
             print(f"Top {top}:")
             n = top
-        else:
-            n = -1
         for key_int, value in status_codes_sorted[:n]:
             print(f"\t({value})\t{key_int}\t\t{status_message_map[key_int]}")
 
