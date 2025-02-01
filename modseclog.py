@@ -290,7 +290,7 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
 
         if (
             args.exclude_source_ip
-            and len(args.exclude_source_ip)
+            and len(args.exclude_source_ip) > 0
             and ev.source_ip is not None
             and ev.source_ip in args.exclude_source_ip
         ):
