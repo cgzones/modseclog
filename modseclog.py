@@ -401,8 +401,9 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
             if ev.status_message is not None:
                 status_message_map[ev.status_code] = ev.status_message
 
-    print(f"Found {len(matched_events)} matching events, {rule_events} with a rule")
-    if len(matched_events) == 0:
+    num_matches = len(matched_events)
+    print(f"Found {num_matches} matching events, {rule_events} with a rule")
+    if num_matches == 0:
         return
 
     if not args.source_ip or len(args.source_ip) != 1:
@@ -414,7 +415,7 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
             print(f"Top {top}:")
             n = top
         for key, value in source_ips_sorted[:n]:
-            print(f"\t({value})\t{key}")
+            print(f"\t({100*value/num_matches:4.1f}% :: {value})\t{key}")
 
     if not args.destination_ip or len(args.destination_ip) != 1:
         print()
@@ -425,7 +426,7 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
             print(f"Top {top}:")
             n = top
         for key, value in destination_ips_sorted[:n]:
-            print(f"\t({value})\t{key}")
+            print(f"\t({100*value/num_matches:4.1f}% :: {value})\t{key}")
 
     if not args.host or len(args.host) != 1:
         print()
@@ -436,7 +437,7 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
             print(f"Top {top}:")
             n = top
         for key, value in requested_hosts_sorted[:n]:
-            print(f"\t({value})\t{key}")
+            print(f"\t({100*value/num_matches:4.1f}% :: {value})\t{key}")
 
     if not args.path or len(args.path) != 1:
         print()
@@ -447,7 +448,7 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
             print(f"Top {top}:")
             n = top
         for key, value in requested_paths_sorted[:n]:
-            print(f"\t({value})\t{key}")
+            print(f"\t({100*value/num_matches:4.1f}% :: {value})\t{key}")
 
     if not args.rule or len(args.rule) != 1:
         print()
@@ -458,7 +459,7 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
             print(f"Top {top}:")
             n = top
         for key_int, value in rule_ids_sorted[:n]:
-            print(f"\t({value})\t{key_int}\t\t{rule_description_map[key_int]}")
+            print(f"\t({100*value/num_matches:4.1f}% :: {value})\t{key_int}\t\t{rule_description_map[key_int]}")
 
     if not args.severity or len(args.severity) != 1:
         print()
@@ -469,7 +470,7 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
             print(f"Top {top}:")
             n = top
         for key, value in rule_severities_sorted[:n]:
-            print(f"\t({value})\t{key}")
+            print(f"\t({100*value/num_matches:4.1f}% :: {value})\t{key}")
 
     if not args.status or len(args.status) != 1:
         print()
@@ -480,7 +481,7 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
             print(f"Top {top}:")
             n = top
         for key_int, value in status_codes_sorted[:n]:
-            print(f"\t({value})\t{key_int}\t\t{status_message_map[key_int]}")
+            print(f"\t({100*value/num_matches:4.1f}% :: {value})\t{key_int}\t\t{status_message_map[key_int]}")
 
     if args.expand:
         for ev in matched_events:
