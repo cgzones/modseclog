@@ -240,7 +240,6 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
 
     top: int = -1 if args.number < 0 else args.number
 
-    print(f"Found {len(events)} total events")
     if args.with_rule:
         print('Excluding events without an associated rule')
     if args.source_ip:
@@ -402,7 +401,7 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
                 status_message_map[ev.status_code] = ev.status_message
 
     num_matches = len(matched_events)
-    print(f"Found {num_matches} matching events, {rule_events} with a rule")
+    print(f"Found {len(events)} total events, {num_matches} matching events, and {rule_events} events with a rule")
     if num_matches == 0:
         return
 
@@ -410,10 +409,12 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
         print()
         source_ips_sorted = sorted(source_ips.items(), key=lambda kv: -kv[1])
         n = len(source_ips_sorted)
-        print(f"Found {n} distinct source IPs")
+        print(f"Found {n} distinct source IPs", end='')
         if not args.list_source_ips and top > 0 and top < n:
-            print(f"Top {top}:")
+            print(f"  --  Top {top}:")
             n = top
+        else:
+            print()
         for key, value in source_ips_sorted[:n]:
             print(f"\t({100*value/num_matches:4.1f}% :: {value})\t{key}")
 
@@ -421,10 +422,12 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
         print()
         destination_ips_sorted = sorted(destination_ips.items(), key=lambda kv: -kv[1])
         n = len(destination_ips_sorted)
-        print(f"Found {n} distinct destination IPs")
+        print(f"Found {n} distinct destination IPs", end='')
         if not args.list_destination_ips and top > 0 and top < n:
-            print(f"Top {top}:")
+            print(f"  --  Top {top}:")
             n = top
+        else:
+            print()
         for key, value in destination_ips_sorted[:n]:
             print(f"\t({100*value/num_matches:4.1f}% :: {value})\t{key}")
 
@@ -432,10 +435,12 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
         print()
         requested_hosts_sorted = sorted(requested_hosts.items(), key=lambda kv: -kv[1])
         n = len(requested_hosts_sorted)
-        print(f"Found {n} distinct requested hosts")
+        print(f"Found {n} distinct requested hosts", end='')
         if not args.list_hosts and top > 0 and top < n:
-            print(f"Top {top}:")
+            print(f"  --  Top {top}:")
             n = top
+        else:
+            print()
         for key, value in requested_hosts_sorted[:n]:
             print(f"\t({100*value/num_matches:4.1f}% :: {value})\t{key}")
 
@@ -443,10 +448,12 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
         print()
         requested_paths_sorted = sorted(requested_paths.items(), key=lambda kv: -kv[1])
         n = len(requested_paths_sorted)
-        print(f"Found {n} distinct requested paths")
+        print(f"Found {n} distinct requested paths", end='')
         if not args.list_paths and top > 0 and top < n:
-            print(f"Top {top}:")
+            print(f"  --  Top {top}:")
             n = top
+        else:
+            print()
         for key, value in requested_paths_sorted[:n]:
             print(f"\t({100*value/num_matches:4.1f}% :: {value})\t{key}")
 
@@ -454,10 +461,12 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
         print()
         rule_ids_sorted = sorted(rule_ids.items(), key=lambda kv: -kv[1])
         n = len(rule_ids_sorted)
-        print(f"Found {n} distinct rules")
+        print(f"Found {n} distinct rules", end='')
         if not args.list_rules and top > 0 and top < n:
-            print(f"Top {top}:")
+            print(f"  --  Top {top}:")
             n = top
+        else:
+            print()
         for key_int, value in rule_ids_sorted[:n]:
             print(f"\t({100*value/num_matches:4.1f}% :: {value})\t{key_int}\t\t{rule_description_map[key_int]}")
 
@@ -465,10 +474,12 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
         print()
         rule_severities_sorted = sorted(rule_severities.items(), key=lambda kv: -kv[1])
         n = len(rule_severities_sorted)
-        print(f"Found {n} distinct rule severities")
+        print(f"Found {n} distinct rule severities", end='')
         if not args.list_severities and top > 0 and top < n:
-            print(f"Top {top}:")
+            print(f"  --  Top {top}:")
             n = top
+        else:
+            print()
         for key, value in rule_severities_sorted[:n]:
             print(f"\t({100*value/num_matches:4.1f}% :: {value})\t{key}")
 
@@ -476,10 +487,12 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
         print()
         status_codes_sorted = sorted(status_codes.items(), key=lambda kv: -kv[1])
         n = len(status_codes_sorted)
-        print(f"Found {n} distinct status codes")
+        print(f"Found {n} distinct status codes", end='')
         if not args.list_statuses and top > 0 and top < n:
-            print(f"Top {top}:")
+            print(f"  --  Top {top}:")
             n = top
+        else:
+            print()
         for key_int, value in status_codes_sorted[:n]:
             print(f"\t({100*value/num_matches:4.1f}% :: {value})\t{key_int}\t\t{status_message_map[key_int]}")
 
