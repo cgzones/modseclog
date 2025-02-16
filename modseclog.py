@@ -35,7 +35,7 @@ segment_a_pattern = re.compile(
 )
 
 # Host: example.com
-segment_b_host_pattern = re.compile(r'^Host: (?P<requested_host>\S+)$')
+segment_b_host_pattern = re.compile(r'^(?:H|h)ost: (?P<requested_host>\S+)$')
 
 # GET /sitecore/shell/sitecore.version.xml HTTP/1.1
 segment_b_path_pattern = re.compile(r'^[A-Z]+ (?P<requested_path>\S+)')
