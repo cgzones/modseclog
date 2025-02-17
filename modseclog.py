@@ -45,7 +45,7 @@ segment_f_status_pattern = re.compile(r'^\S+ (?P<status_code>[0-9]+) (?P<status_
 
 # Message: Warning. Pattern match "^[\\d.:]+$" at REQUEST_HEADERS:Host. [file "/usr/share/modsecurity-crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf"] [line "735"] [id "920350"] [msg "Host header is a numeric IP address"] [data "1.2.3.4"] [severity "WARNING"] [ver "OWASP_CRS/3.3.7"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-protocol"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "capec/1000/210/272"] [tag "PCI/6.5.10"]
 segment_h_warning_pattern = re.compile(
-    r'^Message: Warning\. .* \[id "(?P<rule_id>[0-9]+)"\] .*\[msg "(?P<rule_description>[^"\t\n\r]+)"\] .*\[severity "(?P<rule_severity>[A-Z]+)"\].*$',
+    r'^Message: Warning\. .* \[id "(?P<rule_id>[0-9]+)"\] .*\[msg "(?P<rule_description>[^"\t\n\r]+)"\] (?:\[data "(?P<rule_data>[^"\t\n\r]+)"\] )?.*\[severity "(?P<rule_severity>[A-Z]+)"\].*$',
 )
 
 
@@ -66,6 +66,7 @@ class Event:
     rule_id: int | None
     rule_description: str | None
     rule_severity: str | None
+    rule_data: str | None
 
 
 def analyze_file(file: TextIO) -> list[Event]:
@@ -90,6 +91,7 @@ def analyze_file(file: TextIO) -> list[Event]:
     current_rule_id: int | None = None
     current_rule_description: str | None = None
     current_rule_severity: str | None = None
+    current_rule_data: str | None = None
 
     lineno = 0
 
@@ -142,6 +144,7 @@ def analyze_file(file: TextIO) -> list[Event]:
                     current_rule_id,
                     current_rule_description,
                     current_rule_severity,
+                    current_rule_data,
                 )
 
                 events.append(ev)
@@ -159,6 +162,7 @@ def analyze_file(file: TextIO) -> list[Event]:
                 current_rule_id = None
                 current_rule_description = None
                 current_rule_severity = None
+                current_rule_data = None
             else:
                 current_identifier = identifier
 
@@ -218,9 +222,10 @@ def analyze_file(file: TextIO) -> list[Event]:
                 current_rule_id = int(match.group('rule_id'))
                 current_rule_description = match.group('rule_description')
                 current_rule_severity = match.group('rule_severity')
+                current_rule_data = match.group('rule_data')
                 if verbose:
                     print(
-                        f"Found rule with ID {current_rule_id} of severity {current_rule_severity} and description '{current_rule_description}'",
+                        f"Found rule with ID {current_rule_id} of severity {current_rule_severity} and description '{current_rule_description}' with data '{current_rule_data}'",
                     )
 
             continue
@@ -512,6 +517,7 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
             print(f"\trule id:           {ev.rule_id}")
             print(f"\trule description:  {ev.rule_description}")
             print(f"\trule severity:     {ev.rule_severity}")
+            print(f"\trule data:         {ev.rule_data}")
 
 
 def main() -> int:
