@@ -284,6 +284,9 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
     status_message_map: dict[int, str] = {}
 
     for ev in events:
+        if args.with_rule and ev.rule_id is None:
+            continue
+
         if args.source_ip and len(args.source_ip) > 0 and (ev.source_ip is None or ev.source_ip not in args.source_ip):
             continue
 
@@ -367,9 +370,6 @@ def analyze_events(events: list[Event], args: argparse.Namespace) -> None:
             and ev.status_code is not None
             and ev.status_code in args.exclude_status
         ):
-            continue
-
-        if args.with_rule and ev.rule_id is None:
             continue
 
         matched_events.append(ev)
