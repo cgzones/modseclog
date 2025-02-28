@@ -1,0 +1,37 @@
+[graph]
+all-features = true
+no-default-features = false
+
+[licenses]
+allow = [
+    "MIT",
+    "Apache-2.0",
+]
+# The confidence threshold for detecting a license from license text.
+# The higher the value, the more closely the license text must be to the
+# canonical license text of a valid SPDX license file.
+# [possible values: any between 0.0 and 1.0].
+confidence-threshold = 0.9
+
+exceptions = [
+    { allow = ["Zlib"], crate = "foldhash" },
+    { allow = ["Unicode-3.0"], crate = "unicode-ident" },
+]
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+skip-tree = [
+    { crate = "windows-sys", depth = 3 },
+]
+
+[advisories]
+ignore = [
+    { id = "RUSTSEC-2024-0436", reason = "fixed upstream, waiting for 0.30 release: https://github.com/ratatui/ratatui/pull/1713" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []
