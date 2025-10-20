@@ -9,6 +9,7 @@ description = "Introspection of ModSecurity log files"
 categories = ["command-line-utilities", "security", "visualization"]
 keywords = ["modsecurity", "logging", "apache", "WAF"]
 repository = "https://github.com/cgzones/modseclog-rs"
+exclude = [".github/", ".gitignore", "TODO", "_typos.toml"]
 
 
 [dependencies]
