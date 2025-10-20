@@ -1,5 +1,6 @@
 # modseclog
 
+[![Version info](https://img.shields.io/crates/v/modseclog.svg)](https://crates.io/crates/modseclog)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE?raw=true)
 
 `modseclog` is a graphical terminal application for viewing and analyzing [`ModSecurity`](https://github.com/owasp-modsecurity/ModSecurity) logs.
