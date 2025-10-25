@@ -11,7 +11,7 @@ It helps in finding and fine-tuning problematic requests and rules.
 Either run `modseclog` and manually select the log files to analyse or specify the log files via command line arguments:
 
 ```
-modseclog /var/log/apapche/modsec_audit.*
+modseclog /var/log/apache/modsec_audit.*
 ```
 
 ## License
