@@ -11,9 +11,9 @@ use crate::event_filter::{
 use crate::mod_security::{HttpStatus, HttpStatusCode, RuleId, RuleSeverity};
 use crate::ratatui_utils::{popup_area_absolute, popup_area_percent};
 use crate::style::{
-    ACTIVE_ENTRY_HIGHLIGHT_STYLE, ACTIVE_HEADER_STYLE, HIDDEN_STYLE,
-    INACTIVE_ENTRY_HIGHLIGHT_STYLE, INACTIVE_HEADER_STYLE, KEY_HINT_STYLE, PANEL_HINT_STYLE,
-    PROGRAM_TITLE_STYLE, SCROLL_COUNT,
+    ACTIVE_ENTRY_HIGHLIGHT_STYLE, HEADER_ACTIVE_STYLE, HEADER_INACTIVE_STYLE, HIDDEN_STYLE,
+    INACTIVE_ENTRY_HIGHLIGHT_STYLE, KEY_HINT_STYLE, PANEL_HINT_STYLE, PROGRAM_TITLE_STYLE,
+    SCROLL_COUNT,
 };
 use crate::summary::{IpDetail, RuleIdDesc};
 use crate::utils::contains_case_insensitive;
@@ -1220,7 +1220,7 @@ impl QuitPopupWidget<'_> {
     fn new() -> Self {
         let title = Line::from(" ModSecLog :: Quitting ")
             .centered()
-            .style(ACTIVE_HEADER_STYLE);
+            .style(HEADER_ACTIVE_STYLE);
         let instructions = Line::default()
             .spans([
                 Span::raw(" Yes "),
@@ -1267,7 +1267,7 @@ impl CustomInputPopupWidget<'_> {
     fn new(kind: &'static str) -> Self {
         let title = Line::from(format!(" Add Custom {kind} Filter "))
             .centered()
-            .style(ACTIVE_HEADER_STYLE);
+            .style(HEADER_ACTIVE_STYLE);
         let instructions = Line::default()
             .spans([
                 Span::raw(" Add "),
@@ -1734,7 +1734,7 @@ impl StatefulWidgetRef for &SearchPopupWidget {
 
         let title = Line::from(self.title.as_str())
             .centered()
-            .style(ACTIVE_HEADER_STYLE);
+            .style(HEADER_ACTIVE_STYLE);
 
         let (instructions, count) = if let Some(selected) = state.list_state.selected() {
             (
@@ -1907,7 +1907,7 @@ impl<'a> EventPopupWidget<'a> {
 
         let title = Line::from(" Event Details ")
             .centered()
-            .style(ACTIVE_HEADER_STYLE);
+            .style(HEADER_ACTIVE_STYLE);
         let position =
             Line::from(format!(" {}/{} ", event_index + 1, total_events)).right_aligned();
         let instructions = Line::default()
@@ -1992,12 +1992,12 @@ impl<'a> StatefulWidgetRef for &'a WarningsWidget<'a> {
             } else {
                 format!(" Warnings ({}) ", self.items.len())
             };
-            let title = Line::from(title).centered().style(ACTIVE_HEADER_STYLE);
+            let title = Line::from(title).centered().style(HEADER_ACTIVE_STYLE);
             Block::bordered().title(title).border_set(border::THICK)
         } else {
             let title = Line::from(format!(" Warnings ({}) ", self.items.len()))
                 .centered()
-                .style(INACTIVE_HEADER_STYLE);
+                .style(HEADER_INACTIVE_STYLE);
             let mut block = Block::bordered().title(title).border_set(border::PLAIN);
 
             if *active_panel == ActivePanel::None {
@@ -2183,7 +2183,7 @@ impl<'a> StatefulWidgetRef for &'a EventsWidget<'a> {
         };
 
         let block = if is_active {
-            let title = Line::from(title).centered().style(ACTIVE_HEADER_STYLE);
+            let title = Line::from(title).centered().style(HEADER_ACTIVE_STYLE);
             let instructions = if list_state.selected().is_some() {
                 Line::default()
                     .spans([
@@ -2211,7 +2211,7 @@ impl<'a> StatefulWidgetRef for &'a EventsWidget<'a> {
                 .title_top(rule_events.right_aligned())
                 .border_set(border::THICK)
         } else {
-            let title = Line::from(title).centered().style(INACTIVE_HEADER_STYLE);
+            let title = Line::from(title).centered().style(HEADER_INACTIVE_STYLE);
 
             let median_event_str = filtered_stats.as_ref().map_or_else(
                 || String::from("?"),
@@ -2454,21 +2454,21 @@ trait DetailWidgetImpl {
                         tistr
                     ))
                     .centered()
-                    .style(ACTIVE_HEADER_STYLE)
+                    .style(HEADER_ACTIVE_STYLE)
                 } else {
                     let mut spans = vec![Span::styled(
                         format!(" {} ({}", Self::NAME, tistr),
-                        ACTIVE_HEADER_STYLE,
+                        HEADER_ACTIVE_STYLE,
                     )];
                     if !state.matched.is_empty() {
-                        spans.push(Span::styled("|", ACTIVE_HEADER_STYLE));
+                        spans.push(Span::styled("|", HEADER_ACTIVE_STYLE));
                         spans.push(Span::from(state.matched.len().to_string()).green());
                     }
                     if !state.excluded.is_empty() {
-                        spans.push(Span::styled("|", ACTIVE_HEADER_STYLE));
+                        spans.push(Span::styled("|", HEADER_ACTIVE_STYLE));
                         spans.push(Span::from(state.excluded.len().to_string()).red());
                     }
-                    spans.push(Span::styled(") ", ACTIVE_HEADER_STYLE));
+                    spans.push(Span::styled(") ", HEADER_ACTIVE_STYLE));
 
                     Line::default().spans(spans).bold().centered()
                 };
@@ -2496,17 +2496,17 @@ trait DetailWidgetImpl {
             } else {
                 let mut spans = vec![Span::styled(
                     format!(" {} ({}", Self::NAME, tistr),
-                    INACTIVE_HEADER_STYLE,
+                    HEADER_INACTIVE_STYLE,
                 )];
                 if !state.matched.is_empty() {
-                    spans.push(Span::styled("|", INACTIVE_HEADER_STYLE));
+                    spans.push(Span::styled("|", HEADER_INACTIVE_STYLE));
                     spans.push(Span::from(state.matched.len().to_string()).green());
                 }
                 if !state.excluded.is_empty() {
-                    spans.push(Span::styled("|", INACTIVE_HEADER_STYLE));
+                    spans.push(Span::styled("|", HEADER_INACTIVE_STYLE));
                     spans.push(Span::from(state.excluded.len().to_string()).red());
                 }
-                spans.push(Span::styled(") ", INACTIVE_HEADER_STYLE));
+                spans.push(Span::styled(") ", HEADER_INACTIVE_STYLE));
                 let title = Line::default().spans(spans).centered();
                 let mut block = Block::bordered().title(title).border_set(border::PLAIN);
 
@@ -2535,41 +2535,41 @@ trait DetailWidgetImpl {
                             |t| index.saturating_add(1).min(t.len()).to_string()
                         )
                     ),
-                    ACTIVE_HEADER_STYLE,
+                    HEADER_ACTIVE_STYLE,
                 )];
                 if !state.custom.is_empty() {
-                    spans.push(Span::styled("|", ACTIVE_HEADER_STYLE));
+                    spans.push(Span::styled("|", HEADER_ACTIVE_STYLE));
                     spans.push(Span::from(state.custom.len().to_string()).cyan());
                 }
                 if !state.matched.is_empty() {
-                    spans.push(Span::styled("|", ACTIVE_HEADER_STYLE));
+                    spans.push(Span::styled("|", HEADER_ACTIVE_STYLE));
                     spans.push(Span::from(state.matched.len().to_string()).green());
                 }
                 if !state.excluded.is_empty() {
-                    spans.push(Span::styled("|", ACTIVE_HEADER_STYLE));
+                    spans.push(Span::styled("|", HEADER_ACTIVE_STYLE));
                     spans.push(Span::from(state.excluded.len().to_string()).red());
                 }
-                spans.push(Span::styled(") ", ACTIVE_HEADER_STYLE));
+                spans.push(Span::styled(") ", HEADER_ACTIVE_STYLE));
 
                 Line::default().spans(spans).bold().centered()
             } else {
                 let mut spans = vec![Span::styled(
                     format!(" {} ({tistr}", Self::NAME),
-                    ACTIVE_HEADER_STYLE,
+                    HEADER_ACTIVE_STYLE,
                 )];
                 if !state.custom.is_empty() {
-                    spans.push(Span::styled("|", ACTIVE_HEADER_STYLE));
+                    spans.push(Span::styled("|", HEADER_ACTIVE_STYLE));
                     spans.push(Span::from(state.custom.len().to_string()).cyan());
                 }
                 if !state.matched.is_empty() {
-                    spans.push(Span::styled("|", ACTIVE_HEADER_STYLE));
+                    spans.push(Span::styled("|", HEADER_ACTIVE_STYLE));
                     spans.push(Span::from(state.matched.len().to_string()).green());
                 }
                 if !state.excluded.is_empty() {
-                    spans.push(Span::styled("|", ACTIVE_HEADER_STYLE));
+                    spans.push(Span::styled("|", HEADER_ACTIVE_STYLE));
                     spans.push(Span::from(state.excluded.len().to_string()).red());
                 }
-                spans.push(Span::styled(") ", ACTIVE_HEADER_STYLE));
+                spans.push(Span::styled(") ", HEADER_ACTIVE_STYLE));
 
                 Line::default().spans(spans).bold().centered()
             };
@@ -2607,25 +2607,25 @@ trait DetailWidgetImpl {
             let fistr = filtered_items.len().to_string();
             let mut spans = vec![Span::styled(
                 format!(" {} ({fistr}", Self::NAME),
-                INACTIVE_HEADER_STYLE,
+                HEADER_INACTIVE_STYLE,
             )];
             if total_items.is_none_or(|ti| ti.len() != filtered_items.len()) {
-                spans.push(Span::styled("/", INACTIVE_HEADER_STYLE));
+                spans.push(Span::styled("/", HEADER_INACTIVE_STYLE));
                 spans.push(Span::from(tistr.as_str()).style(HIDDEN_STYLE));
             }
             if !state.custom.is_empty() {
-                spans.push(Span::styled("|", INACTIVE_HEADER_STYLE));
+                spans.push(Span::styled("|", HEADER_INACTIVE_STYLE));
                 spans.push(Span::from(state.custom.len().to_string()).cyan());
             }
             if !state.matched.is_empty() {
-                spans.push(Span::styled("|", INACTIVE_HEADER_STYLE));
+                spans.push(Span::styled("|", HEADER_INACTIVE_STYLE));
                 spans.push(Span::from(state.matched.len().to_string()).green());
             }
             if !state.excluded.is_empty() {
-                spans.push(Span::styled("|", INACTIVE_HEADER_STYLE));
+                spans.push(Span::styled("|", HEADER_INACTIVE_STYLE));
                 spans.push(Span::from(state.excluded.len().to_string()).red());
             }
-            spans.push(Span::styled(") ", INACTIVE_HEADER_STYLE));
+            spans.push(Span::styled(") ", HEADER_INACTIVE_STYLE));
             let title = Line::default().spans(spans).centered();
             let mut block = Block::bordered().title(title).border_set(border::PLAIN);
 

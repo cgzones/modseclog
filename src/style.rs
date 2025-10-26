@@ -2,8 +2,8 @@ use ratatui::style::{Color, Modifier, Style};
 
 pub(crate) const PROGRAM_TITLE_STYLE: Style =
     Style::new().add_modifier(Modifier::BOLD).fg(Color::Magenta);
-pub(crate) const INACTIVE_HEADER_STYLE: Style = Style::new().fg(Color::LightMagenta);
-pub(crate) const ACTIVE_HEADER_STYLE: Style =
+pub(crate) const HEADER_INACTIVE_STYLE: Style = Style::new().fg(Color::LightMagenta);
+pub(crate) const HEADER_ACTIVE_STYLE: Style =
     Style::new().add_modifier(Modifier::BOLD).fg(Color::Blue);
 pub(crate) const KEY_HINT_STYLE: Style = Style::new()
     .add_modifier(Modifier::BOLD)
