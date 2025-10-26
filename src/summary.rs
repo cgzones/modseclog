@@ -5,7 +5,7 @@ use crate::{
     mod_security::HttpStatus,
 };
 
-use hashbrown::{HashMap, hash_map::Entry};
+use hashbrown::HashMap;
 use ipnet::IpNet;
 use time::OffsetDateTime;
 
@@ -89,114 +89,60 @@ pub(crate) fn calc_summary(
     let mut requested_hosts = CountMap::new();
     let mut requested_paths = CountMap::new();
 
-    assert!(events.is_sorted_by(|a, b| a.date.cmp(&b.date).reverse().is_le()));
+    debug_assert!(events.is_sorted_by(|a, b| a.date.cmp(&b.date).reverse().is_le()));
 
     for event in events {
         total_events += 1;
 
         if let Some(source_ip) = event.source_ip {
-            match source_ips.entry(IpDetail::Single(source_ip)) {
-                Entry::Occupied(mut occupied_entry) => {
-                    *occupied_entry.get_mut() += 1;
-                }
-                Entry::Vacant(vacant_entry) => {
-                    vacant_entry.insert(1);
-                }
-            }
+            *source_ips.entry(IpDetail::Single(source_ip)).or_default() += 1;
         }
 
         if let Some(destination_ip) = event.destination_ip {
-            match destination_ips.entry(IpDetail::Single(destination_ip)) {
-                Entry::Occupied(mut occupied_entry) => {
-                    *occupied_entry.get_mut() += 1;
-                }
-                Entry::Vacant(vacant_entry) => {
-                    vacant_entry.insert(1);
-                }
-            }
+            *destination_ips
+                .entry(IpDetail::Single(destination_ip))
+                .or_default() += 1;
         }
 
         if let Some(rule_details) = &event.rule_details {
             rule_events += 1;
 
-            if let Some(count) = rule_ids.get_mut(&rule_details.id) {
-                *count += 1;
-            } else {
-                let r = rule_ids.insert(rule_details.id, 1);
-                assert!(r.is_none());
-            }
+            *rule_ids.entry(rule_details.id).or_default() += 1;
 
-            if let Some(count) =
-                rule_severities.get_mut(&DisplayRuleSeverity::Some(rule_details.severity))
-            {
-                *count += 1;
-            } else {
-                let r = rule_severities.insert(DisplayRuleSeverity::Some(rule_details.severity), 1);
-                assert!(r.is_none());
-            }
+            *rule_severities
+                .entry(DisplayRuleSeverity::Some(rule_details.severity))
+                .or_default() += 1;
         } else {
             /* Store as rule with no severity */
-            if let Some(count) = rule_severities.get_mut(&DisplayRuleSeverity::None) {
-                *count += 1;
-            } else {
-                let r = rule_severities.insert(DisplayRuleSeverity::None, 1);
-                assert!(r.is_none());
-            }
+            *rule_severities
+                .entry(DisplayRuleSeverity::None)
+                .or_default() += 1;
         }
 
         if let Some(date) = event.date {
-            if let Some(first) = first_datetime {
-                if date < first {
-                    first_datetime = Some(date);
-                }
-            } else {
+            if first_datetime.is_none_or(|first| date < first) {
                 first_datetime = Some(date);
             }
 
-            if let Some(last) = last_datetime {
-                if date > last {
-                    last_datetime = Some(date);
-                }
-            } else {
+            if last_datetime.is_none_or(|last| date > last) {
                 last_datetime = Some(date);
             }
         }
 
         if let Some(method) = &event.http_method {
-            if let Some(count) = http_methods.get_mut(method) {
-                *count += 1;
-            } else {
-                let r = http_methods.insert(method.clone(), 1);
-                assert!(r.is_none());
-            }
+            *http_methods.entry_ref(method).or_default() += 1;
         }
 
         if let Some(status) = &event.http_status {
-            let code = status.code;
-            if let Some(count) = http_codes.get_mut(&code) {
-                *count += 1;
-            } else {
-                let r = http_codes.insert(code, 1);
-                assert!(r.is_none());
-            }
+            *http_codes.entry(&status.code).or_default() += 1;
         }
 
         if let Some(host) = &event.requested_host {
-            if let Some(count) = requested_hosts.get_mut(host) {
-                *count += 1;
-            } else {
-                let r = requested_hosts.insert(host.clone(), 1);
-                assert!(r.is_none());
-            }
+            *requested_hosts.entry_ref(host).or_default() += 1;
         }
 
         if let Some(path) = &event.requested_path {
-            if let Some(count) = requested_paths.get_mut(path) {
-                *count += 1;
-            } else {
-                let r = requested_paths.insert(path.clone(), 1);
-                assert!(r.is_none());
-            }
+            *requested_paths.entry_ref(path).or_default() += 1;
         }
     }
 
