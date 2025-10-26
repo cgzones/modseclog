@@ -1,6 +1,6 @@
 use std::io;
 use std::num::{ParseIntError, Saturating, Wrapping};
-use std::sync::mpsc;
+use std::sync::{Arc, mpsc};
 
 use crate::event_filter::{
     DestinationIpExclude, DestinationIpMatch, DisplayRuleSeverity, HttpMethodExclude,
@@ -190,11 +190,11 @@ enum FilteredData {
 
 pub(crate) struct OverviewScreen {
     task_tx: mpsc::Sender<AppTask>,
-    parsed_events: Vec<ModSecurityEvent>,
+    parsed_events: Arc<[ModSecurityEvent]>,
     filtered: FilteredData,
     warnings: Vec<String>,
-    rule_descriptions: HashMap<RuleId, String>,
-    http_descriptions: HashMap<HttpStatusCode, String>,
+    rule_descriptions: Arc<HashMap<RuleId, String>>,
+    http_descriptions: Arc<HashMap<HttpStatusCode, String>>,
     parsed_stats: Option<Statistics>,
     show_events: EventVisibility,
     show_warnings: bool,
@@ -209,7 +209,7 @@ macro_rules! filtered {
         match &$id.filtered {
             FilteredData::Filtered(data, stats) => Some((data.as_slice(), stats)),
             FilteredData::Unfiltered => match $id.parsed_stats.as_ref() {
-                Some(s) => Some(($id.parsed_events.as_slice(), s)),
+                Some(s) => Some((&*$id.parsed_events, s)),
                 None => None,
             },
             FilteredData::Loading => None,
@@ -232,11 +232,15 @@ impl OverviewScreen {
             EventVisibility::Partial
         };
 
+        let parsed_events = Arc::from(parsed_events);
+        let rule_descriptions = Arc::new(rule_descriptions);
+        let http_descriptions = Arc::new(http_descriptions);
+
         task_tx
             .send(AppTask::CalcSummary(
-                parsed_events.clone(),
-                rule_descriptions.clone(),
-                http_descriptions.clone(),
+                Arc::clone(&parsed_events),
+                Arc::clone(&rule_descriptions),
+                Arc::clone(&http_descriptions),
             ))
             .expect("task thread should not die before TUI thread");
 
@@ -961,10 +965,10 @@ impl OverviewScreen {
             self.task_tx
                 .send(AppTask::ProcessFilters(
                     self.seqno.0,
-                    self.parsed_events.clone(),
+                    Arc::clone(&self.parsed_events),
                     self.filters.clone(),
-                    self.rule_descriptions.clone(),
-                    self.http_descriptions.clone(),
+                    Arc::clone(&self.rule_descriptions),
+                    Arc::clone(&self.http_descriptions),
                 ))
                 .expect("task thread should not die before TUI thread");
         }

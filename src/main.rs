@@ -5,7 +5,7 @@
 
 use std::io;
 use std::path::PathBuf;
-use std::sync::mpsc;
+use std::sync::{Arc, mpsc};
 use std::thread::{self};
 
 use crate::event_filter::{EventFilter, EventFilterImpl};
@@ -147,16 +147,16 @@ fn handle_input_events(tx: mpsc::Sender<AppEvent>) {
 enum AppTask {
     ProcessFile(PathBuf),
     CalcSummary(
-        Vec<ModSecurityEvent>,
-        HashMap<RuleId, String>,
-        HashMap<HttpStatusCode, String>,
+        Arc<[ModSecurityEvent]>,
+        Arc<HashMap<RuleId, String>>,
+        Arc<HashMap<HttpStatusCode, String>>,
     ),
     ProcessFilters(
         u32,
-        Vec<ModSecurityEvent>,
+        Arc<[ModSecurityEvent]>,
         Vec<EventFilter>,
-        HashMap<RuleId, String>,
-        HashMap<HttpStatusCode, String>,
+        Arc<HashMap<RuleId, String>>,
+        Arc<HashMap<HttpStatusCode, String>>,
     ),
 }
 
@@ -194,8 +194,9 @@ fn handle_tasks(rx: mpsc::Receiver<AppTask>, tx: mpsc::Sender<AppEvent>) {
                 http_descriptions,
             ) => {
                 let filtered_events = events
-                    .into_iter()
+                    .iter()
                     .filter(|event| filters.iter().all(|f| f.apply(event)))
+                    .cloned()
                     .collect::<Vec<_>>();
 
                 let filtered_stats =
