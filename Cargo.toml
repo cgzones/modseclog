@@ -8,7 +8,7 @@ readme = "README.md"
 description = "Introspection of ModSecurity log files"
 categories = ["command-line-utilities", "security", "visualization"]
 keywords = ["modsecurity", "logging", "apache", "WAF"]
-repository = "https://github.com/cgzones/modseclog-rs"
+repository = "https://github.com/cgzones/modseclog"
 exclude = [".github/", ".gitignore", "TODO", "_typos.toml"]
 
 
