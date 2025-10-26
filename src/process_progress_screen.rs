@@ -14,6 +14,7 @@ use ratatui::prelude::*;
 use ratatui::symbols::border;
 use ratatui::widgets::{Block, Gauge, List, ListItem};
 
+#[derive(Clone, Copy)]
 enum ShowWarnings {
     Initial,
     Enabled,
@@ -138,8 +139,9 @@ impl ProcessProgressScreen {
                         )));
                     }
                 }
-                AppEvent::ProcessedFilters(_, _, _) => unreachable!(),
-                AppEvent::CalculatedSummary(_) => unreachable!(),
+                AppEvent::ProcessedFilters(_, _, _) | AppEvent::CalculatedSummary(_) => {
+                    unreachable!()
+                }
             }
         }
     }
@@ -239,7 +241,7 @@ impl<'a> StatefulWidget for &'a mut ProcessProgressScreen {
         let [progress_bar_area] = bar_layout.areas(bar_area);
 
         let block = Block::bordered().border_set(border::PLAIN).title(filename);
-        #[expect(clippy::cast_precision_loss)]
+        #[expect(clippy::cast_precision_loss, reason = "ratio is a float")]
         let ratio = self.finished as f64 / self.total as f64;
         let progress_bar = Gauge::default()
             .block(block)

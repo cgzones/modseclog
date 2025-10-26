@@ -175,7 +175,7 @@ impl std::fmt::Display for ModSecurityEvent {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 enum Segment {
     A,
     B,
@@ -232,7 +232,7 @@ pub(crate) enum ParseError {
 impl std::fmt::Display for ParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Io(err) => write!(f, "{err}"),
+            Self::Io(err) => err.fmt(f),
         }
     }
 }
@@ -312,11 +312,11 @@ pub(crate) fn parse(path: &Path) -> Result<ModSecParseRes, ParseError> {
 
     /* Host: example.com */
     let segment_b_host_pattern =
-        Regex::new(r#"^(?:H|h)ost: (?P<requested_host>\S+)$"#).expect("regex is valid");
+        Regex::new(r"^(?:H|h)ost: (?P<requested_host>\S+)$").expect("regex is valid");
 
     /* GET /sitecore/shell/sitecore.version.xml HTTP/1.1 */
     let segment_b_path_pattern =
-        Regex::new(r#"^(?P<http_method>[A-Z]+) (?P<requested_path>\S+)"#).expect("regex is valid");
+        Regex::new(r"^(?P<http_method>[A-Z]+) (?P<requested_path>\S+)").expect("regex is valid");
 
     /* User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36 */
     let segment_b_user_agent =
@@ -324,7 +324,7 @@ pub(crate) fn parse(path: &Path) -> Result<ModSecParseRes, ParseError> {
 
     /* HTTP/1.1 404 Not Found */
     let segment_f_status_pattern =
-        Regex::new(r#"^\S+ (?P<status_code>[0-9]+) (?P<status_message>.+)$"#)
+        Regex::new(r"^\S+ (?P<status_code>[0-9]+) (?P<status_message>.+)$")
             .expect("regex is valid");
 
     /* Message: Warning. Pattern match "^[\\d.:]+$" at REQUEST_HEADERS:Host. [file "/usr/share/modsecurity-crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf"] [line "735"] [id "920350"] [msg "Host header is a numeric IP address"] [data "1.2.3.4"] [severity "WARNING"] [ver "OWASP_CRS/3.3.7"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-protocol"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "capec/1000/210/272"] [tag "PCI/6.5.10"] */

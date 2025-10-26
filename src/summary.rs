@@ -12,7 +12,7 @@ use time::OffsetDateTime;
 type CountMap<T> = HashMap<T, u64>;
 type CountVec<T> = Vec<(T, u64)>;
 
-#[derive(Clone, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Eq, Hash, PartialEq)]
 pub(crate) enum IpDetail {
     Single(IpAddr),
     Cidr(IpNet),
@@ -160,7 +160,7 @@ pub(crate) fn calc_summary(
                     id: rule_id,
                     desc: rule_descriptions
                         .get(&rule_id)
-                        .map_or_else(|| String::from("n/a"), |desc| desc.clone()),
+                        .map_or_else(|| String::from("n/a"), std::clone::Clone::clone),
                 },
                 count,
             )
@@ -182,7 +182,7 @@ pub(crate) fn calc_summary(
                     code: *code,
                     message: http_descriptions
                         .get(code)
-                        .map_or_else(|| String::from("n/a"), |desc| desc.clone()),
+                        .map_or_else(|| String::from("n/a"), std::clone::Clone::clone),
                 },
                 count,
             )

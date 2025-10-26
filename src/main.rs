@@ -120,7 +120,6 @@ impl MainApp {
 
         Self {
             current_screen: start_screen,
-            //event_tx,
             event_rx,
             task_tx,
         }
@@ -134,11 +133,12 @@ enum AppEvent {
     ProcessedFilters(u32, Vec<ModSecurityEvent>, Statistics),
 }
 
+#[expect(clippy::needless_pass_by_value, reason = "thread entry point")]
 fn handle_input_events(tx: mpsc::Sender<AppEvent>) {
     loop {
         let event = ratatui::crossterm::event::read().expect("require a working terminal");
         if tx.send(AppEvent::Term(event)).is_err() {
-            /* MainApp is dead, exit */
+            // MainApp is dead, exit
             break;
         }
     }
@@ -160,14 +160,12 @@ enum AppTask {
     ),
 }
 
+#[expect(clippy::needless_pass_by_value, reason = "thread entry point")]
 fn handle_tasks(rx: mpsc::Receiver<AppTask>, tx: mpsc::Sender<AppEvent>) {
     loop {
-        let task = match rx.recv() {
-            Ok(t) => t,
-            Err(_err) => {
-                /* MainApp is dead */
-                return;
-            }
+        let Ok(task) = rx.recv() else {
+            // MainApp is dead
+            return;
         };
 
         match task {
@@ -176,7 +174,7 @@ fn handle_tasks(rx: mpsc::Receiver<AppTask>, tx: mpsc::Sender<AppEvent>) {
                 let result = result
                     .map_err(|err| format!("Failed to parse file {}: {}", file.display(), err));
                 if tx.send(AppEvent::ProcessedFile(result)).is_err() {
-                    /* MainApp is dead */
+                    // MainApp is dead
                     return;
                 }
             }
@@ -184,7 +182,7 @@ fn handle_tasks(rx: mpsc::Receiver<AppTask>, tx: mpsc::Sender<AppEvent>) {
                 let stats = calc_summary(&events, &rule_descriptions, &http_descriptions);
 
                 if tx.send(AppEvent::CalculatedSummary(stats)).is_err() {
-                    /* MainApp is dead */
+                    // MainApp is dead
                     return;
                 }
             }
@@ -211,7 +209,7 @@ fn handle_tasks(rx: mpsc::Receiver<AppTask>, tx: mpsc::Sender<AppEvent>) {
                     ))
                     .is_err()
                 {
-                    /* MainApp is dead */
+                    // MainApp is dead
                     return;
                 }
             }
@@ -219,7 +217,7 @@ fn handle_tasks(rx: mpsc::Receiver<AppTask>, tx: mpsc::Sender<AppEvent>) {
     }
 }
 
-/// Introspection for ModSecurity log files
+/// Introspection for `ModSecurity` log files
 #[derive(Parser)]
 #[command(version, about, author, long_about = None)]
 struct Args {

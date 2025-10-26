@@ -137,11 +137,13 @@ impl ActivePanel {
     }
 }
 
+#[derive(Clone, Copy)]
 enum AddFilterKind {
     SourceIpMatch,
     SourceIpExclude,
 }
 
+#[derive(Clone, Copy)]
 enum Action {
     None,
     FilterUpdate,
@@ -152,7 +154,7 @@ enum Action {
     Unselect,
 }
 
-#[derive(Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq)]
 enum EventVisibility {
     Hidden,
     Partial,
@@ -161,7 +163,7 @@ enum EventVisibility {
 
 impl EventVisibility {
     #[must_use]
-    const fn next(&self) -> Self {
+    const fn next(self) -> Self {
         match self {
             Self::Hidden => Self::Partial,
             Self::Partial => Self::Full,
@@ -170,7 +172,7 @@ impl EventVisibility {
     }
 
     #[must_use]
-    const fn previous(&self) -> Self {
+    const fn previous(self) -> Self {
         match self {
             Self::Hidden => Self::Full,
             Self::Partial => Self::Hidden,
@@ -289,16 +291,19 @@ impl OverviewScreen {
             );
 
             /* only one popup */
-            match (
-                custom_input_popup_widget.is_some(),
-                search_popup_widget.is_some(),
-                event_popup_widget.is_some(),
-            ) {
-                (false, false, false) => {}
-                (true, false, false) => {}
-                (false, true, false) => {}
-                (false, false, true) => {}
-                _ => unreachable!(),
+            #[expect(clippy::unnested_or_patterns)]
+            {
+                assert!(matches!(
+                    (
+                        custom_input_popup_widget.is_some(),
+                        search_popup_widget.is_some(),
+                        event_popup_widget.is_some(),
+                    ),
+                    (false, false, false)
+                        | (true, false, false)
+                        | (false, true, false)
+                        | (false, false, true)
+                ));
             }
 
             if rebuild_filters {
@@ -1541,7 +1546,10 @@ impl StatefulWidgetRef for &CustomInputPopupWidget<'_> {
 
         input.render(input_area, buf);
 
-        #[expect(clippy::cast_possible_truncation)]
+        #[expect(
+            clippy::cast_possible_truncation,
+            reason = "input should not exceed u16"
+        )]
         {
             state.cursor_pos = Position::new(
                 input_area.x + state.input_pos.0 as u16 + 1,
@@ -1807,7 +1815,10 @@ impl StatefulWidgetRef for &SearchPopupWidget {
             StatefulWidget::render(list, results_area, buf, &mut state.list_state);
         }
 
-        #[expect(clippy::cast_possible_truncation)]
+        #[expect(
+            clippy::cast_possible_truncation,
+            reason = "input should not exceed u16"
+        )]
         {
             state.cursor_pos = Position::new(
                 input_area.x + state.input_pos.0 as u16 + 1,
@@ -2027,7 +2038,9 @@ impl<'a> EventsWidget<'a> {
         parsed_stats: Option<&'a Statistics>,
         filtered_stats: Option<&'a Statistics>,
     ) -> Self {
-        let items = events.map_or(Vec::new(), |ev| ev.iter().map(|e| e.into()).collect());
+        let items = events.map_or(Vec::new(), |ev| {
+            ev.iter().map(std::convert::Into::into).collect()
+        });
 
         Self {
             parsed_stats,

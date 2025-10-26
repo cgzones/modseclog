@@ -5,8 +5,6 @@ use crate::AppEvent;
 use crate::Succession;
 use crate::style::{HIDDEN_STYLE, KEY_HINT_STYLE, PROGRAM_TITLE_STYLE, SCROLL_COUNT};
 
-//use crossterm::event::{Event, KeyCode, KeyEventKind, KeyModifiers};
-
 use ratatui::crossterm::event::{Event, KeyCode, KeyEventKind, KeyModifiers};
 use ratatui::prelude::*;
 use ratatui::widgets::{ListItem, StatefulWidget};
