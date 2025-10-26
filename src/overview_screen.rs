@@ -28,6 +28,7 @@ use ratatui::DefaultTerminal;
 use ratatui::buffer::Buffer;
 use ratatui::layout::{Constraint, Layout, Rect};
 use ratatui::prelude::*;
+use ratatui::style::Color::DarkGray;
 use ratatui::style::Style;
 use ratatui::symbols::border;
 use ratatui::text::{Line, Span, Text};
@@ -1059,7 +1060,14 @@ impl<'a> StatefulWidgetRef for &'a OverviewWidget<'a> {
                         Span::styled("<w> ", KEY_HINT_STYLE),
                         Span::raw(" Select Details "),
                         Span::styled("<tab> ", KEY_HINT_STYLE),
-                        Span::raw(" Reset Filter "),
+                        Span::styled(
+                            " Reset Filter ",
+                            if screen.filters.is_empty() {
+                                Style::new().fg(DarkGray)
+                            } else {
+                                Style::default()
+                            },
+                        ),
                         Span::styled("<R> ", KEY_HINT_STYLE),
                         Span::raw(" Quit "),
                         Span::styled("<q> ", KEY_HINT_STYLE),
