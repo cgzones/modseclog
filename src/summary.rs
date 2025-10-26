@@ -201,10 +201,10 @@ pub(crate) fn calc_summary(
     }
 
     let mut source_ips = source_ips.into_iter().collect::<Vec<_>>();
-    source_ips.sort_by(|a, b| a.1.cmp(&b.1).reverse());
+    source_ips.sort_unstable_by(|a, b| a.1.cmp(&b.1).reverse());
 
     let mut destination_ips = destination_ips.into_iter().collect::<Vec<_>>();
-    destination_ips.sort_by(|a, b| a.1.cmp(&b.1).reverse());
+    destination_ips.sort_unstable_by(|a, b| a.1.cmp(&b.1).reverse());
 
     let mut rule_ids = rule_ids
         .into_iter()
@@ -220,35 +220,35 @@ pub(crate) fn calc_summary(
             )
         })
         .collect::<Vec<_>>();
-    rule_ids.sort_by(|a, b| a.1.cmp(&b.1).reverse());
+    rule_ids.sort_unstable_by(|a, b| a.1.cmp(&b.1).reverse());
 
     let mut rule_severities = rule_severities.into_iter().collect::<Vec<_>>();
-    rule_severities.sort_by(|a, b| a.1.cmp(&b.1).reverse());
+    rule_severities.sort_unstable_by(|a, b| a.1.cmp(&b.1).reverse());
 
     let mut http_methods = http_methods.into_iter().collect::<Vec<_>>();
-    http_methods.sort_by(|a, b| a.1.cmp(&b.1).reverse());
+    http_methods.sort_unstable_by(|a, b| a.1.cmp(&b.1).reverse());
 
     let mut http_codes = http_codes
         .into_iter()
         .map(|(code, count)| {
             (
                 HttpStatus {
-                    code,
+                    code: *code,
                     message: http_descriptions
-                        .get(&code)
+                        .get(code)
                         .map_or_else(|| String::from("n/a"), |desc| desc.clone()),
                 },
                 count,
             )
         })
         .collect::<Vec<_>>();
-    http_codes.sort_by(|a, b| a.1.cmp(&b.1).reverse());
+    http_codes.sort_unstable_by(|a, b| a.1.cmp(&b.1).reverse());
 
     let mut requested_hosts = requested_hosts.into_iter().collect::<Vec<_>>();
-    requested_hosts.sort_by(|a, b| a.1.cmp(&b.1).reverse());
+    requested_hosts.sort_unstable_by(|a, b| a.1.cmp(&b.1).reverse());
 
     let mut requested_paths = requested_paths.into_iter().collect::<Vec<_>>();
-    requested_paths.sort_by(|a, b| a.1.cmp(&b.1).reverse());
+    requested_paths.sort_unstable_by(|a, b| a.1.cmp(&b.1).reverse());
 
     let median_datetime = events.get(events.len() / 2).and_then(|e| e.date);
 

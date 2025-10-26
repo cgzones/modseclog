@@ -1713,7 +1713,7 @@ impl StatefulWidgetRef for &SearchPopupWidget {
             })
             .collect::<Vec<_>>();
 
-        items.sort_by(|a, b| a.2.cmp(&b.2).reverse());
+        items.sort_unstable_by(|a, b| a.2.cmp(&b.2).reverse());
         state.selected = state.list_state.selected().and_then(|s| {
             items
                 .get(s)

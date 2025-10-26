@@ -79,7 +79,7 @@ impl MainApp {
                     http_descriptions,
                     warnings,
                 )) => {
-                    events.sort_by(|a, b| a.date.cmp(&b.date).reverse());
+                    events.sort_unstable_by(|a, b| a.date.cmp(&b.date).reverse());
                     self.current_screen = AppScreen::Overview(Box::new(OverviewScreen::new(
                         events,
                         rule_descriptions,
