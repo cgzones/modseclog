@@ -2,12 +2,12 @@ use crate::{
     HttpStatusCode, ModSecurityEvent, RuleId, mod_security::RuleSeverity, summary::IpDetail,
 };
 
-pub(crate) trait EventFilterImpl: Clone + PartialEq {
+pub(crate) trait EventFilterImpl: Clone + Eq {
     #[must_use]
     fn apply(&self, event: &ModSecurityEvent) -> bool;
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) enum EventFilter {
     SourceIpExclude(SourceIpExclude),
     SourceIpMatch(SourceIpMatch),
@@ -50,7 +50,7 @@ impl EventFilterImpl for EventFilter {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct SourceIpExclude {
     pub(crate) ipnet: IpDetail,
 }
@@ -61,7 +61,7 @@ impl EventFilterImpl for SourceIpExclude {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct SourceIpMatch {
     pub(crate) ipnets: Vec<IpDetail>,
 }
@@ -74,7 +74,7 @@ impl EventFilterImpl for SourceIpMatch {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct DestinationIpExclude {
     pub(crate) ipnet: IpDetail,
 }
@@ -87,7 +87,7 @@ impl EventFilterImpl for DestinationIpExclude {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct DestinationIpMatch {
     pub(crate) ipnets: Vec<IpDetail>,
 }
@@ -130,7 +130,7 @@ impl std::fmt::Display for DisplayRuleSeverity {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct RuleSeverityExclude {
     pub(crate) sev: DisplayRuleSeverity,
 }
@@ -144,7 +144,7 @@ impl EventFilterImpl for RuleSeverityExclude {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct RuleSeverityMatch {
     pub(crate) sevs: Vec<DisplayRuleSeverity>,
 }
@@ -158,7 +158,7 @@ impl EventFilterImpl for RuleSeverityMatch {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct RuleIdExclude {
     pub(crate) id: RuleId,
 }
@@ -172,7 +172,7 @@ impl EventFilterImpl for RuleIdExclude {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct RuleIdMatch {
     pub(crate) ids: Vec<RuleId>,
 }
@@ -186,7 +186,7 @@ impl EventFilterImpl for RuleIdMatch {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct HttpStatusExclude {
     pub(crate) code: HttpStatusCode,
 }
@@ -200,7 +200,7 @@ impl EventFilterImpl for HttpStatusExclude {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct HttpStatusMatch {
     pub(crate) codes: Vec<HttpStatusCode>,
 }
@@ -214,7 +214,7 @@ impl EventFilterImpl for HttpStatusMatch {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct HttpMethodExclude {
     pub(crate) method: String,
 }
@@ -228,7 +228,7 @@ impl EventFilterImpl for HttpMethodExclude {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct HttpMethodMatch {
     pub(crate) methods: Vec<String>,
 }
@@ -242,7 +242,7 @@ impl EventFilterImpl for HttpMethodMatch {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct RequestedHostExclude {
     pub(crate) host: String,
 }
@@ -256,7 +256,7 @@ impl EventFilterImpl for RequestedHostExclude {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct RequestedHostMatch {
     pub(crate) hosts: Vec<String>,
 }
@@ -270,7 +270,7 @@ impl EventFilterImpl for RequestedHostMatch {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct RequestedPathExclude {
     pub(crate) path: String,
 }
@@ -284,7 +284,7 @@ impl EventFilterImpl for RequestedPathExclude {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(crate) struct RequestedPathMatch {
     pub(crate) paths: Vec<String>,
 }

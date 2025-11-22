@@ -43,8 +43,8 @@ impl FromStr for IpDetail {
 impl std::fmt::Display for IpDetail {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Single(ip) => write!(f, "{ip}"),
-            Self::Cidr(ipnet) => write!(f, "{ipnet}"),
+            Self::Single(ip) => ip.fmt(f),
+            Self::Cidr(ipnet) => ipnet.fmt(f),
         }
     }
 }

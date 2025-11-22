@@ -48,7 +48,7 @@ impl RuleSeverity {
 
 impl std::fmt::Display for RuleSeverity {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.to_str())
+        f.write_str(self.to_str())
     }
 }
 
@@ -175,7 +175,7 @@ impl std::fmt::Display for ModSecurityEvent {
     }
 }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq)]
 enum Segment {
     A,
     B,

@@ -3,22 +3,23 @@ pub(crate) fn contains_case_insensitive(
     needle: impl AsRef<str>,
     haystack: impl AsRef<str>,
 ) -> bool {
-    let needle = needle.as_ref();
-    let haystack = haystack.as_ref();
+    fn inner(needle: &str, haystack: &str) -> bool {
+        let mut needle_iter = needle.chars();
 
-    let mut needle_iter = needle.chars();
+        for char in haystack.chars() {
+            let Some(needle_char) = needle_iter.next() else {
+                return true;
+            };
 
-    for char in haystack.chars() {
-        let Some(needle_char) = needle_iter.next() else {
-            return true;
-        };
-
-        if !char.eq_ignore_ascii_case(&needle_char) {
-            needle_iter = needle.chars();
+            if !char.eq_ignore_ascii_case(&needle_char) {
+                needle_iter = needle.chars();
+            }
         }
+
+        needle_iter.next().is_none()
     }
 
-    needle_iter.next().is_none()
+    inner(needle.as_ref(), haystack.as_ref())
 }
 
 #[cfg(test)]

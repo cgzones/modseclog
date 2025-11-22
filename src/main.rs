@@ -168,23 +168,17 @@ fn handle_tasks(rx: mpsc::Receiver<AppTask>, tx: mpsc::Sender<AppEvent>) {
             return;
         };
 
-        match task {
+        let event = match task {
             AppTask::ProcessFile(file) => {
                 let result = mod_security::parse(&file);
                 let result = result
                     .map_err(|err| format!("Failed to parse file {}: {}", file.display(), err));
-                if tx.send(AppEvent::ProcessedFile(result)).is_err() {
-                    // MainApp is dead
-                    return;
-                }
+                AppEvent::ProcessedFile(result)
             }
             AppTask::CalcSummary(events, rule_descriptions, http_descriptions) => {
                 let stats = calc_summary(&events, &rule_descriptions, &http_descriptions);
 
-                if tx.send(AppEvent::CalculatedSummary(stats)).is_err() {
-                    // MainApp is dead
-                    return;
-                }
+                AppEvent::CalculatedSummary(stats)
             }
             AppTask::ProcessFilters(
                 seqno,
@@ -202,18 +196,13 @@ fn handle_tasks(rx: mpsc::Receiver<AppTask>, tx: mpsc::Sender<AppEvent>) {
                 let filtered_stats =
                     calc_summary(&filtered_events, &rule_descriptions, &http_descriptions);
 
-                if tx
-                    .send(AppEvent::ProcessedFilters(
-                        seqno,
-                        filtered_events,
-                        filtered_stats,
-                    ))
-                    .is_err()
-                {
-                    // MainApp is dead
-                    return;
-                }
+                AppEvent::ProcessedFilters(seqno, filtered_events, filtered_stats)
             }
+        };
+
+        if tx.send(event).is_err() {
+            // MainApp is dead
+            return;
         }
     }
 }

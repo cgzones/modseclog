@@ -2366,7 +2366,7 @@ trait DetailWidgetImpl {
 
     const PANEL: ActivePanel;
 
-    type DetailType: Clone + PartialEq + ToString;
+    type DetailType: Clone + Eq + ToString;
     type StatisticType; // TODO: use `= Self::DetailType` default when stable
 
     #[must_use]
