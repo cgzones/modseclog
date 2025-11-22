@@ -2588,14 +2588,27 @@ trait DetailWidgetImpl {
                         Span::styled("<del> ", KEY_HINT_STYLE),
                     ])
                     .centered(),
-                Some(_) => Line::default()
-                    .spans([
-                        Span::raw(" Match "),
-                        Span::styled("<m> ", KEY_HINT_STYLE),
-                        Span::raw(" Exclude "),
-                        Span::styled("<x> ", KEY_HINT_STYLE),
-                    ])
-                    .centered(),
+                Some(x) => {
+                    let ins_match = if state.matched.contains(&x) {
+                        " Del match filter "
+                    } else {
+                        " Add match filter "
+                    };
+                    let ins_exclude = if state.excluded.contains(&x) {
+                        " Del exclude filter "
+                    } else {
+                        " Add exclude filter "
+                    };
+
+                    Line::default()
+                        .spans([
+                            Span::raw(ins_match),
+                            Span::styled("<m> ", KEY_HINT_STYLE),
+                            Span::raw(ins_exclude),
+                            Span::styled("<x> ", KEY_HINT_STYLE),
+                        ])
+                        .centered()
+                }
                 None => Line::default()
                     .spans([
                         Span::raw(" Select "),
