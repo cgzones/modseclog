@@ -12,10 +12,10 @@ use ratatui::{
     DefaultTerminal,
     buffer::Buffer,
     layout::{Constraint, Layout, Rect},
-    style::{Style, Stylize},
+    style::Style,
     symbols::border,
     text::Line,
-    widgets::{Block, List, ListState, StatefulWidgetRef, WidgetRef},
+    widgets::{Block, List, ListState, StatefulWidgetRef, WidgetRef as _},
 };
 
 use ratatui_explorer::{FileExplorer, Theme};

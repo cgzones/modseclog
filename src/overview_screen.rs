@@ -22,7 +22,7 @@ use crate::{AppEvent, AppTask, EventFilter, ModSecurityEvent, Statistics, Succes
 use hashbrown::HashMap;
 use ratatui::crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 
-use fuzzy_matcher::{FuzzyMatcher, skim::SkimMatcherV2};
+use fuzzy_matcher::{FuzzyMatcher as _, skim::SkimMatcherV2};
 
 use ratatui::DefaultTerminal;
 use ratatui::buffer::Buffer;

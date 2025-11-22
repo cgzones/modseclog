@@ -8,7 +8,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, mpsc};
 use std::thread::{self};
 
-use crate::event_filter::{EventFilter, EventFilterImpl};
+use crate::event_filter::{EventFilter, EventFilterImpl as _};
 use crate::mod_security::{HttpStatusCode, ModSecParseRes, ModSecurityEvent, RuleId};
 use crate::overview_screen::OverviewScreen;
 use crate::process_progress_screen::ProcessProgressScreen;

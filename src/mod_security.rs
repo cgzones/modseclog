@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{self, BufRead, BufReader, ErrorKind, Read, Seek, Take};
+use std::io::{self, BufRead as _, BufReader, ErrorKind, Read as _, Seek as _, Take};
 use std::net::IpAddr;
 use std::path::Path;
 use std::str::FromStr;
