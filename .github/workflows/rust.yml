@@ -18,7 +18,7 @@ jobs:
       SQLX_OFFLINE: true
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Build
         run: cargo build --verbose
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Spaces check
         run: git diff-tree --check $(git hash-object -t tree /dev/null) HEAD
@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install codespell
         run: sudo apt-get install -y codespell
