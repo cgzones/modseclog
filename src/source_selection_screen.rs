@@ -15,7 +15,7 @@ use ratatui::{
     style::Style,
     symbols::border,
     text::Line,
-    widgets::{Block, List, ListState, StatefulWidgetRef, WidgetRef as _},
+    widgets::{Block, FrameExt as _, List, ListState, StatefulWidgetRef, WidgetRef as _},
 };
 
 use ratatui_explorer::{FileExplorer, Theme};

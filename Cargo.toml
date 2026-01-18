@@ -18,8 +18,8 @@ flate2 = "1.1.0"
 fuzzy-matcher = "0.3.7"
 hashbrown = "0.16.0"
 ipnet = "2.11.0"
-ratatui = "0.29"
-ratatui-explorer = "0.2.1"
+ratatui = { version = "0.30", features = ["unstable-widget-ref"] }
+ratatui-explorer = { path = "../ratatui-explorer" }
 regex = "1.11.1"
 time = { version = "0.3.37", features = ["formatting", "macros", "parsing"] }
 
