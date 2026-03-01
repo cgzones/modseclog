@@ -20,7 +20,7 @@ hashbrown = "0.16.0"
 ipnet = "2.11.0"
 ratatui = "0.29"
 ratatui-explorer = "0.2.1"
-regex = "1.11.1"
+regex = "1.12.3"
 time = { version = "0.3.37", features = ["formatting", "macros", "parsing"] }
 
 
