@@ -1,7 +1,5 @@
-#![cfg_attr(
-    test,
-    allow(clippy::map_unwrap_or, clippy::unwrap_used, clippy::too_many_lines)
-)]
+#![allow(clippy::redundant_closure_for_method_calls, clippy::too_many_lines)]
+#![cfg_attr(test, allow(clippy::map_unwrap_or, clippy::unwrap_used))]
 
 use std::io;
 use std::path::PathBuf;
@@ -28,6 +26,9 @@ mod source_selection_screen;
 mod style;
 mod summary;
 mod utils;
+
+// TODO: replace usages with ! once stable
+enum Never {}
 
 enum AppScreen {
     SourceSelection,
@@ -64,7 +65,7 @@ struct MainApp {
 impl MainApp {
     fn run(&mut self, terminal: &mut DefaultTerminal) -> io::Result<()> {
         loop {
-            match self.current_screen.run(terminal, &self.event_rx)? {
+            let _: Never = match self.current_screen.run(terminal, &self.event_rx)? {
                 Succession::Quit => break,
                 Succession::ProcessFiles(sources) => {
                     self.current_screen = AppScreen::ProcessProgress(ProcessProgressScreen::new(
@@ -89,7 +90,7 @@ impl MainApp {
                     )));
                     continue;
                 }
-            }
+            };
         }
 
         Ok(())
