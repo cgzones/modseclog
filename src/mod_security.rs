@@ -3,6 +3,7 @@ use std::io::{self, BufRead as _, BufReader, ErrorKind, Read as _, Seek as _, Ta
 use std::net::IpAddr;
 use std::path::Path;
 use std::str::FromStr;
+use std::sync::LazyLock;
 
 use flate2::read::GzDecoder;
 
@@ -264,6 +265,45 @@ pub(crate) type ModSecParseRes = (
     Vec<String>,
 );
 
+/* --544ccf79-A-- */
+static HEADER_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^--(?P<identifier>[a-zA-Z0-9]{8})-(?P<segment_type>A|B|C|E|F|H|I|J|K|Z)--$")
+        .expect("regex is valid")
+});
+
+/* [20/Jan/2025:10:08:30.463235 +0100] A42B7cP9_-4N31GLhv8UyABAAVo 1.2.3.4 57761 5.6.7.8 443 */
+static SEGMENT_A_PATTERN: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(
+        r"^\[(?P<timestamp>.+)\] [a-zA-Z0-9_-]+ (?P<source_ip>[0-9.:a-fA-F]+) (?P<source_port>[0-9]+) (?P<destination_ip>[0-9.:a-fA-F]+) (?P<destination_port>[0-9]+)$"
+    ).expect("regex is valid")
+});
+
+/* Host: example.com */
+static SEGMENT_B_HOST_PATTERN: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^(?:H|h)ost: (?P<requested_host>\S+)$").expect("regex is valid"));
+
+/* GET /sitecore/shell/sitecore.version.xml HTTP/1.1 */
+static SEGMENT_B_PATH_PATTERN: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^(?P<http_method>[A-Z]+) (?P<requested_path>\S+)").expect("regex is valid")
+});
+
+/* User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36 */
+static SEGMENT_B_USER_AGENT: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"^User-Agent: (?P<user_agent>[^"\t\n\r]+)"#).expect("regex is valid")
+});
+
+/* HTTP/1.1 404 Not Found */
+static SEGMENT_F_STATUS_PATTERN: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^\S+ (?P<status_code>[0-9]+) (?P<status_message>.+)$").expect("regex is valid")
+});
+
+/* Message: Warning. Pattern match "^[\\d.:]+$" at REQUEST_HEADERS:Host. [file "/usr/share/modsecurity-crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf"] [line "735"] [id "920350"] [msg "Host header is a numeric IP address"] [data "1.2.3.4"] [severity "WARNING"] [ver "OWASP_CRS/3.3.7"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-protocol"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "capec/1000/210/272"] [tag "PCI/6.5.10"] */
+static SEGMENT_H_WARNING_PATTERN: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(
+        r#"^Message: Warning\. .* \[id "(?P<rule_id>[0-9]+)"\] .*\[msg "(?P<rule_description>[^"\t\n\r]+)"\] (?:\[data "(?P<rule_data>[^"\t\n\r]+)"\] )?.*\[severity "(?P<rule_severity>[A-Z]+)"\].*$"#
+    ).expect("regex is valid")
+});
+
 pub(crate) fn parse(path: &Path) -> Result<ModSecParseRes, ParseError> {
     let mut events = Vec::new();
     let mut rule_descriptions = HashMap::new();
@@ -300,38 +340,6 @@ pub(crate) fn parse(path: &Path) -> Result<ModSecParseRes, ParseError> {
     let mut curr_event: Option<ModSecurityEvent> = None;
     let mut curr_segment = Segment::Z;
 
-    /* --544ccf79-A-- */
-    let header_re =
-        Regex::new(r"^--(?P<identifier>[a-zA-Z0-9]{8})-(?P<segment_type>A|B|C|E|F|H|I|J|K|Z)--$")
-            .expect("regex is valid");
-
-    /* [20/Jan/2025:10:08:30.463235 +0100] A42B7cP9_-4N31GLhv8UyABAAVo 1.2.3.4 57761 5.6.7.8 443 */
-    let segment_a_pattern = Regex::new(
-     r"^\[(?P<timestamp>.+)\] [a-zA-Z0-9_-]+ (?P<source_ip>[0-9.:a-fA-F]+) (?P<source_port>[0-9]+) (?P<destination_ip>[0-9.:a-fA-F]+) (?P<destination_port>[0-9]+)$"
- ).expect("regex is valid");
-
-    /* Host: example.com */
-    let segment_b_host_pattern =
-        Regex::new(r"^(?:H|h)ost: (?P<requested_host>\S+)$").expect("regex is valid");
-
-    /* GET /sitecore/shell/sitecore.version.xml HTTP/1.1 */
-    let segment_b_path_pattern =
-        Regex::new(r"^(?P<http_method>[A-Z]+) (?P<requested_path>\S+)").expect("regex is valid");
-
-    /* User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36 */
-    let segment_b_user_agent =
-        Regex::new(r#"^User-Agent: (?P<user_agent>[^"\t\n\r]+)"#).expect("regex is valid");
-
-    /* HTTP/1.1 404 Not Found */
-    let segment_f_status_pattern =
-        Regex::new(r"^\S+ (?P<status_code>[0-9]+) (?P<status_message>.+)$")
-            .expect("regex is valid");
-
-    /* Message: Warning. Pattern match "^[\\d.:]+$" at REQUEST_HEADERS:Host. [file "/usr/share/modsecurity-crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf"] [line "735"] [id "920350"] [msg "Host header is a numeric IP address"] [data "1.2.3.4"] [severity "WARNING"] [ver "OWASP_CRS/3.3.7"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-protocol"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "capec/1000/210/272"] [tag "PCI/6.5.10"] */
-    let segment_h_warning_pattern = Regex::new(
-    r#"^Message: Warning\. .* \[id "(?P<rule_id>[0-9]+)"\] .*\[msg "(?P<rule_description>[^"\t\n\r]+)"\] (?:\[data "(?P<rule_data>[^"\t\n\r]+)"\] )?.*\[severity "(?P<rule_severity>[A-Z]+)"\].*$"#
-  ).expect("regex is valid");
-
     let mut lineno: u64 = 0;
     let mut data_no_curr_logged = false;
 
@@ -352,7 +360,7 @@ pub(crate) fn parse(path: &Path) -> Result<ModSecParseRes, ParseError> {
         }
 
         if line.starts_with("--")
-            && let Some(caps) = header_re.captures(line)
+            && let Some(caps) = HEADER_RE.captures(line)
         {
             let identifier = &caps["identifier"];
             let segment_type = &caps["segment_type"];
@@ -444,7 +452,7 @@ pub(crate) fn parse(path: &Path) -> Result<ModSecParseRes, ParseError> {
 
         match curr_segment {
             Segment::A => {
-                if let Some(caps) = segment_a_pattern.captures(line) {
+                if let Some(caps) = SEGMENT_A_PATTERN.captures(line) {
                     let timestamp = &caps["timestamp"];
                     let source_ip = &caps["source_ip"];
                     let source_port = &caps["source_port"];
@@ -521,7 +529,7 @@ pub(crate) fn parse(path: &Path) -> Result<ModSecParseRes, ParseError> {
             }
             Segment::B => {
                 if curr_event.requested_host.is_none()
-                    && let Some(caps) = segment_b_host_pattern.captures(line)
+                    && let Some(caps) = SEGMENT_B_HOST_PATTERN.captures(line)
                 {
                     let requested_host = &caps["requested_host"];
 
@@ -529,7 +537,7 @@ pub(crate) fn parse(path: &Path) -> Result<ModSecParseRes, ParseError> {
                 }
 
                 if curr_event.http_method.is_none()
-                    && let Some(caps) = segment_b_path_pattern.captures(line)
+                    && let Some(caps) = SEGMENT_B_PATH_PATTERN.captures(line)
                 {
                     let http_method = &caps["http_method"];
                     let requested_path = &caps["requested_path"];
@@ -539,7 +547,7 @@ pub(crate) fn parse(path: &Path) -> Result<ModSecParseRes, ParseError> {
                 }
 
                 if curr_event.user_agent.is_none()
-                    && let Some(caps) = segment_b_user_agent.captures(line)
+                    && let Some(caps) = SEGMENT_B_USER_AGENT.captures(line)
                 {
                     let user_agent = &caps["user_agent"];
 
@@ -548,7 +556,7 @@ pub(crate) fn parse(path: &Path) -> Result<ModSecParseRes, ParseError> {
             }
             Segment::F => {
                 if curr_event.http_status.is_none()
-                    && let Some(caps) = segment_f_status_pattern.captures(line)
+                    && let Some(caps) = SEGMENT_F_STATUS_PATTERN.captures(line)
                 {
                     let status_code = &caps["status_code"];
                     let status_message = &caps["status_message"];
@@ -593,7 +601,7 @@ pub(crate) fn parse(path: &Path) -> Result<ModSecParseRes, ParseError> {
             Segment::H => {
                 if curr_event.rule_details.is_none()
                     && line.starts_with("Message: Warning. ")
-                    && let Some(caps) = segment_h_warning_pattern.captures(line)
+                    && let Some(caps) = SEGMENT_H_WARNING_PATTERN.captures(line)
                 {
                     let rule_id = &caps["rule_id"];
                     let rule_description = &caps["rule_description"];
