@@ -1039,7 +1039,7 @@ impl<'a> StatefulWidgetRef for &'a OverviewWidget<'a> {
             rule_severity_state,
             http_status_state,
             http_method_state,
-            requetsed_host_state,
+            requested_host_state,
             requested_path_state,
         ) = state;
 
@@ -1184,7 +1184,7 @@ impl<'a> StatefulWidgetRef for &'a OverviewWidget<'a> {
             screen.active_panel,
             screen.parsed_stats.as_ref(),
             filtered_stats,
-            requetsed_host_state,
+            requested_host_state,
         );
 
         self.requested_path.render(

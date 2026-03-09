@@ -602,7 +602,7 @@ def main() -> int:
         '--exclude-path',
         type=str,
         action='append',
-        help='do not show events with the given requetsted path; can be specified multiple times',
+        help='do not show events with the given requested path; can be specified multiple times',
     )
     parser.add_argument(
         '-q',
@@ -616,7 +616,7 @@ def main() -> int:
         '--exclude-host',
         type=str,
         action='append',
-        help='do not show events with the given requetsted host; can be specified multiple times',
+        help='do not show events with the given requested host; can be specified multiple times',
     )
     parser.add_argument(
         '-r',

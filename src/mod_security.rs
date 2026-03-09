@@ -42,7 +42,7 @@ impl RuleSeverity {
             Self::Critical => "critical",
             Self::Error => "error",
             Self::Notice => "notice",
-            Self::Warning => "warnings",
+            Self::Warning => "warning",
         }
     }
 }
