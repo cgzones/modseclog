@@ -1727,7 +1727,7 @@ impl StatefulWidgetRef for &SearchPopupWidget {
             .filter_map(|e| {
                 matcher
                     .fuzzy_match(e, &state.input)
-                    .map(|score| (e, contains_case_insensitive(&state.input, e), score))
+                    .map(|score| (e, contains_case_insensitive(e, &state.input), score))
             })
             .collect::<Vec<_>>();
 

@@ -1,25 +1,15 @@
 #[must_use]
 pub(crate) fn contains_case_insensitive(
-    needle: impl AsRef<str>,
     haystack: impl AsRef<str>,
+    needle: impl AsRef<str>,
 ) -> bool {
-    fn inner(needle: &str, haystack: &str) -> bool {
-        let mut needle_iter = needle.chars();
-
-        for char in haystack.chars() {
-            let Some(needle_char) = needle_iter.next() else {
-                return true;
-            };
-
-            if !char.eq_ignore_ascii_case(&needle_char) {
-                needle_iter = needle.chars();
-            }
-        }
-
-        needle_iter.next().is_none()
+    fn inner(haystack: &str, needle: &str) -> bool {
+        let haystack_lower = haystack.to_ascii_lowercase();
+        let needle_lower = needle.to_ascii_lowercase();
+        haystack_lower.contains(&needle_lower)
     }
 
-    inner(needle.as_ref(), haystack.as_ref())
+    inner(haystack.as_ref(), needle.as_ref())
 }
 
 #[cfg(test)]
@@ -28,14 +18,32 @@ mod tests {
 
     #[test]
     fn test_contains_case_insensitive() {
-        assert!(contains_case_insensitive("", "hello"));
-        assert!(!contains_case_insensitive("hello", ""));
-        assert!(contains_case_insensitive("foo", "foobar"));
-        assert!(contains_case_insensitive("foo", "barfoo"));
-        assert!(!contains_case_insensitive("foo", "bar"));
-        assert!(!contains_case_insensitive("bar", "baz"));
-        assert!(!contains_case_insensitive("foobar", "bar"));
-        assert!(contains_case_insensitive("foo", "fOo"));
-        assert!(!contains_case_insensitive("fOu", "Foo"));
+        assert!(contains_case_insensitive("hello", ""));
+        assert!(contains_case_insensitive("", ""));
+        assert!(!contains_case_insensitive("", "hello"));
+        assert!(contains_case_insensitive("foobar", "foo"));
+        assert!(contains_case_insensitive("barfoo", "foo"));
+        assert!(!contains_case_insensitive("bar", "foo"));
+        assert!(!contains_case_insensitive("baz", "bar"));
+        assert!(!contains_case_insensitive("bar", "foobar"));
+        assert!(contains_case_insensitive("fOo", "foo"));
+        assert!(!contains_case_insensitive("Foo", "fOu"));
+    }
+
+    #[test]
+    fn test_contains_case_insensitive_overlapping() {
+        assert!(contains_case_insensitive("aaab", "aab"));
+        assert!(contains_case_insensitive("ababa", "aba"));
+        assert!(contains_case_insensitive("baa", "aa"));
+        assert!(contains_case_insensitive("aaab", "AAB"));
+        assert!(contains_case_insensitive("AAAB", "aab"));
+
+        assert!(contains_case_insensitive("hello", "hello"));
+        assert!(contains_case_insensitive("hello", "HELLO"));
+        assert!(contains_case_insensitive("HELLO", "hello"));
+
+        assert!(contains_case_insensitive("hello world!", "world"));
+        assert!(contains_case_insensitive("hello world!", "WORLD"));
+        assert!(contains_case_insensitive("hello world!", "lo wo"));
     }
 }
