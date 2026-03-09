@@ -21,11 +21,6 @@ skip-tree = [
     { crate = "windows-sys", depth = 3 },
 ]
 
-[advisories]
-ignore = [
-    { id = "RUSTSEC-2024-0436", reason = "fixed upstream, waiting for 0.30 release: https://github.com/ratatui/ratatui/pull/1713" },
-]
-
 [sources]
 unknown-registry = "deny"
 unknown-git = "deny"

@@ -15,10 +15,10 @@ use ratatui::{
     style::Style,
     symbols::border,
     text::Line,
-    widgets::{Block, List, ListState, StatefulWidgetRef, WidgetRef as _},
+    widgets::{Block, FrameExt as _, List, ListState, StatefulWidgetRef, WidgetRef as _},
 };
 
-use ratatui_explorer::{FileExplorer, Theme};
+use ratatui_explorer::{FileExplorer, FileExplorerBuilder, Theme};
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 enum ActivePanel {
@@ -62,7 +62,7 @@ impl SourceSelectionScreen {
         let mut selected_files = Vec::new();
         let mut selected_state = ListState::default();
         let mut active_panel = ActivePanel::FileExplorer;
-        let mut file_explorer = FileExplorer::with_theme(Self::fe_active_theme())?;
+        let mut file_explorer = FileExplorerBuilder::build_with_theme(Self::fe_active_theme())?;
         let mut elements = None;
 
         loop {
@@ -141,7 +141,7 @@ impl SourceSelectionScreen {
                                 let mut found = false;
 
                                 for (i, p) in selected_files.iter().enumerate() {
-                                    if p == selected.path() {
+                                    if *p == selected.path {
                                         found = true;
                                         if key.code == KeyCode::Enter {
                                             elements = None;
@@ -153,7 +153,7 @@ impl SourceSelectionScreen {
 
                                 if !found {
                                     elements = None;
-                                    selected_files.push(selected.path().clone());
+                                    selected_files.push(selected.path.clone());
                                 }
 
                                 selected_state.select(None);

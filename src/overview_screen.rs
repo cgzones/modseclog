@@ -32,12 +32,10 @@ use ratatui::style::Color::DarkGray;
 use ratatui::style::Style;
 use ratatui::symbols::border;
 use ratatui::text::{Line, Span, Text};
-use ratatui::widgets::ListItem;
 use ratatui::widgets::{
-    Block, Cell, Clear, List, ListState, Paragraph, Row, StatefulWidget, StatefulWidgetRef, Table,
-    TableState, Widget, Wrap,
+    Block, BorderType, Cell, Clear, FrameExt as _, List, ListItem, ListState, Paragraph, Row,
+    StatefulWidget, StatefulWidgetRef, Table, TableState, Widget, WidgetRef, Wrap,
 };
-use ratatui::widgets::{BorderType, WidgetRef};
 
 use time::format_description::well_known::Rfc2822;
 
