@@ -16,7 +16,7 @@ exclude = [".github/", ".gitignore", "TODO", "_typos.toml"]
 clap = { version = "4.5.31", features = ["derive"] }
 flate2 = "1.1.0"
 fuzzy-matcher = "0.3.7"
-hashbrown = "0.16.0"
+hashbrown = "0.17.1"
 ipnet = "2.11.0"
 ratatui = { version = "0.30", features = ["unstable-widget-ref"] }
 ratatui-explorer = "0.3.0"
